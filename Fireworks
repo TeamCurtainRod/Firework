@@ -1,0 +1,59 @@
+#
+# Fireworks Display
+#
+
+import pygame
+import math
+import game_mouse
+import fireworks_data
+
+class Fireworks(game_mouse.Game):
+
+    def __init__(self, width, height):
+
+        game_mouse.Game.__init__(self, "Fireworks",
+                                 width,
+                                 height,
+                                 20)
+        self.data = fireworks_data.FireworksData(width, height)
+        self.sky_color = (0, 0, 0)
+        self.firework_color = (255, 0, 0)
+        return
+        
+    def game_logic(self, keys, newkeys, buttons, newbuttons, mouse_position):
+        self.data.evolve(1./self.frames_per_second)
+
+        return
+
+    def drawSky(self, surface):
+        surface.fill(self.sky_color)
+        return
+
+    def drawFirework(self, surface, f):
+        radius = 2
+        if f.getState() == fireworks_data.STATE_EXPLODE:
+            radius = 10
+
+        (r,g,b) = self.firework_color
+        tail =  f.getTail()
+        fade = .8
+        for i in range(len(tail)-1, 1, -1):
+            pygame.draw.line(surface, (r,g,b), tail[i], tail[i-1], radius)
+            r,g,b = int(r*fade), int(g*fade), int(b*fade)
+        return
+    
+    def paint(self, surface):
+        self.drawSky(surface)
+        fw = self.data.getFireworks()
+        for f in fw:
+            self.drawFirework(surface, f)
+        return
+
+def main():
+    c = Fireworks(800, 600)
+    c.main_loop()
+    
+if __name__ == "__main__":
+    main()
+
+
